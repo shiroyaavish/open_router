@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber"
 )
 
-func QuasarAlpha(requestBody map[string]interface{}, secret string, response interface{}) error {
+func QuasarAlpha(requestBody map[string]interface{}, secret string, response interface{}) float64 {
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
 		panic(err)
@@ -68,7 +68,6 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 			"error": "Invalid or empty 'choices' format",
 		})
 	}
-
 	choice, ok := choices[0].(map[string]interface{})
 	if !ok {
 		fmt.Println(ok)
@@ -93,14 +92,24 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 		})
 	}
 
-	// matches := cleanMarkdownCodeBlock(content)
-	// // json.Unmarshal([]byte(content), &response)
 	if err := json.Unmarshal([]byte(content), &response); err != nil {
 		fmt.Println(err)
 		panic(fiber.Map{
 			"error": "Error at response unmarshel",
 		})
 	}
-	return nil
+	usage, ok := responseData["usage"].(map[string]interface{})
+	if !ok {
+		panic(fiber.Map{
+			"error": "Error at fetch usage",
+		})
+	}
+	totalUsedToken, ok := usage["total_token"].(float64)
+	if !ok {
+		panic(fiber.Map{
+			"error": "Error at fetch total used token",
+		})
+	}
+	return totalUsedToken
 
 }
