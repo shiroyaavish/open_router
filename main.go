@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/gofiber/fiber"
 )
 
 func QuasarAlpha(requestBody map[string]interface{}, secret string, response interface{}) float64 {
@@ -30,7 +28,7 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Error in connectivity with cook.",
 			"data":  err,
 		})
@@ -41,7 +39,7 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 
 	if err != nil {
 		fmt.Println(err)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Error in connectivity with cook.",
 			"data":  err,
 		})
@@ -49,64 +47,60 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 	var responseData map[string]interface{}
 	if err := json.Unmarshal(result, &responseData); err != nil {
 		fmt.Println(err)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Failed to unmarshal response",
 		})
 	}
 	choicesRaw, ok := responseData["choices"]
 	if !ok {
-		fmt.Println(ok)
-		panic(fiber.Map{
+		fmt.Println(responseData)
+		panic(map[string]interface{}{
 			"error": "Missing 'choices' in API response",
 		})
 	}
 
 	choices, ok := choicesRaw.([]interface{})
 	if !ok || len(choices) == 0 {
-		fmt.Println(ok)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Invalid or empty 'choices' format",
 		})
 	}
 	choice, ok := choices[0].(map[string]interface{})
 	if !ok {
-		fmt.Println(ok)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Invalid 'choice' structure",
 		})
 	}
 
 	message, ok := choice["message"].(map[string]interface{})
 	if !ok {
-		fmt.Println(ok)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Missing 'message' in choice",
 		})
 	}
 
 	content, ok := message["content"].(string)
 	if !ok {
-		fmt.Println(ok)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Missing 'content' in message",
 		})
 	}
 
 	if err := json.Unmarshal([]byte(content), &response); err != nil {
 		fmt.Println(err)
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Error at response unmarshel",
 		})
 	}
 	usage, ok := responseData["usage"].(map[string]interface{})
 	if !ok {
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Error at fetch usage",
 		})
 	}
 	totalUsedToken, ok := usage["total_tokens"].(float64)
 	if !ok {
-		panic(fiber.Map{
+		panic(map[string]interface{}{
 			"error": "Error at fetch total used token",
 		})
 	}
