@@ -104,7 +104,7 @@ func QuasarAlpha(requestBody map[string]interface{}, secret string, response int
 			"error": "Error at fetch usage",
 		})
 	}
-	totalUsedToken, ok := usage["total_token"].(float64)
+	totalUsedToken, ok := usage["total_tokens"].(float64)
 	if !ok {
 		panic(fiber.Map{
 			"error": "Error at fetch total used token",
